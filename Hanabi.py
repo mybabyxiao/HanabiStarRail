@@ -106,7 +106,7 @@ def send_keyboard_input(hwnd, text):
 # 三通道彩色匹配
 
 
-def Three_channel_matching(templatepath, targetpath):
+def Three_channel_matching(templatepath, targetpath, matches_threshold=50, distance_threshold=0.5):
     # 加载彩色模板图片和目标图片
     template = cv2.imread(templatepath)  # 模板图片（彩色）
     target = cv2.imread(targetpath)      # 目标图片（彩色）
@@ -149,17 +149,17 @@ def Three_channel_matching(templatepath, targetpath):
     # 过滤匹配点
     good_matches = []
     for m, n in matches_b:
-        if m.distance < 0.75 * n.distance:  # 距离比
+        if m.distance < distance_threshold * n.distance:  # 距离比
             good_matches.append(m)
     for m, n in matches_g:
-        if m.distance < 0.75 * n.distance:  # 距离比
+        if m.distance < distance_threshold * n.distance:  # 距离比
             good_matches.append(m)
     for m, n in matches_r:
-        if m.distance < 0.75 * n.distance:  # 距离比
+        if m.distance < distance_threshold * n.distance:  # 距离比
             good_matches.append(m)
 
     # 至少需要4个点来计算单应性
-    if len(good_matches) > 4:
+    if len(good_matches) > matches_threshold:
         # 提取匹配点的位置
         src_pts = np.float32(
             [kp_b[m.queryIdx].pt for m in good_matches]).reshape(-1, 1, 2)
